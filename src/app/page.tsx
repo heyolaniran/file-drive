@@ -14,6 +14,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
+
       <SignedIn>
         <SignOutButton>
         <Button className="capitalize">Login</Button>
@@ -27,11 +28,7 @@ export default function Home() {
       </SignedOut>
       <SignInButton mode="modal" />
 
-      {files?.map((file) => {
-        return <div key={file._id}>
-          {file.name}
-        </div>
-      })}
+     
 
       <Button onClick={() => {
         createFile({
