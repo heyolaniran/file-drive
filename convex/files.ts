@@ -4,7 +4,8 @@ import {mutation, query} from './_generated/server'
 
 export const createFile = mutation({
     args : {
-        name : v.string()
+        name : v.string(), 
+        orgId : v.string()
     }, 
 
     async handler (context , args) {
@@ -16,7 +17,8 @@ export const createFile = mutation({
             throw new ConvexError('you must be logged In first') ; 
         }
         await context.db.insert('files', {
-            name : args.name
+            name : args.name , 
+            orgId: args.orgId
         })
     }
 })
@@ -26,7 +28,9 @@ export const createFile = mutation({
 
 
 export const getFiles = query({
-    args: {} , 
+    args: {
+        orgId : v.string()
+    } , 
 
    async handler(context, args) {
 
@@ -36,6 +40,11 @@ export const getFiles = query({
             return [] ; 
         }
 
-        return context.db.query('files').collect() ; 
+
+        return context.db.query('files')
+        .withIndex('by_org_id', (q) => q.eq('orgId' , args.orgId))
+        .collect() ; 
+
+        
    }
 })
