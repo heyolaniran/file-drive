@@ -7,6 +7,10 @@ export default defineSchema({
     files: defineTable({
         name : v.string() , 
         orgId: v.optional(v.string())  // make optional column 
-    }).index('by_org_id' , ['orgId']) 
+    }).index('by_org_id' , ['orgId']) , 
+
+    users: defineTable({
+        tokenIdentifier : v.string()
+    })
 
 })
