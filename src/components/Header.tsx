@@ -17,11 +17,9 @@ export default function Header() {
             </SignedIn>
 
             <SignedOut>
-
               <SignInButton mode='modal'>
                 <Button className='px-6  rounded-full '> Log in  </Button>
               </SignInButton>
-
             </SignedOut>
            
           </div>
