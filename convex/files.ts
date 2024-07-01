@@ -1,6 +1,19 @@
 
 import { ConvexError, v } from 'convex/values'
-import {mutation, query} from './_generated/server' 
+import {MutationCtx, QueryCtx, mutation, query} from './_generated/server' 
+import { getUser } from './users';
+
+
+async function hasAccessToOrg (context : QueryCtx | MutationCtx , tokenIdentifier : string , orgId : string) {
+
+    const user = await getUser(context , tokenIdentifier); 
+
+    const hasAccess = user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId)
+
+    return hasAccess ; 
+}
+
+
 
 export const createFile = mutation({
     args : {
@@ -16,6 +29,13 @@ export const createFile = mutation({
 
             throw new ConvexError('you must be logged In first') ; 
         }
+
+        const hasAccess = await hasAccessToOrg(context , identity.tokenIdentifier , args.orgId)
+
+        if(!hasAccess) {
+            throw new ConvexError('You are not authorized in this Organization') ; 
+        }
+
         await context.db.insert('files', {
             name : args.name , 
             orgId: args.orgId
@@ -34,11 +54,19 @@ export const getFiles = query({
 
    async handler(context, args) {
 
-        const identity = context.auth.getUserIdentity() ; 
+        const identity = await  context.auth.getUserIdentity() ; 
 
         if(!identity) {
             return [] ; 
         }
+
+        const hasAccess = await hasAccessToOrg(context , identity.tokenIdentifier , args.orgId)
+
+        if(!hasAccess) {
+            return [] ; 
+        }
+        
+
 
 
         return context.db.query('files')

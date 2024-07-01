@@ -1,5 +1,20 @@
-import { internalMutation } from "./_generated/server";
+import { MutationCtx, QueryCtx, internalMutation } from "./_generated/server";
 import {ConvexError, v} from 'convex/values'
+
+
+export async function getUser(context : QueryCtx | MutationCtx , tokenIdentifier : string  ) {
+
+    const user =  await context.db.query('users')
+    .withIndex('by_tokenidentifier',  (q) => q.eq("tokenIdentifier" , tokenIdentifier ))
+    .first(); 
+
+    if(!user) {
+        throw new ConvexError('User must be exist'); 
+    }
+
+    return user; 
+}
+
 export const createUser = internalMutation({
     args : {tokenIdentifier : v.string() 
     } , 
@@ -26,14 +41,9 @@ export const addOrgIdToUser = internalMutation({
 
         // Get user information  first
 
-       const user = await context.db.query('users')
-       .withIndex('by_tokenidentifier',  (q) => q.eq("tokenIdentifier" , args.tokenIdentifier))
-       .first(); 
+       const user = await getUser(context , args.tokenIdentifier) ; 
 
-       if(!user) {
-            throw new ConvexError('Expected user')
-       }
-
+      
        // append org identifiers  to existing user organization list
 
        await context.db.patch(user._id , {
