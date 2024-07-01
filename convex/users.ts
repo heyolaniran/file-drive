@@ -36,10 +36,10 @@ export const addOrgIdToUser = internalMutation({
 
        // append org identifiers  to existing user organization list
 
-       await context.db.insert("users", {
-        tokenIdentifier : args.tokenIdentifier, 
+       await context.db.patch(user._id , {
         orgIds : [...user.orgIds , args.orgId]
        })
+
 
 
     }
