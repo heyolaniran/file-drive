@@ -7,6 +7,7 @@ export default defineSchema({
     // files table
     files: defineTable({
         name : v.string() , 
+        fileId : v.id('_storage'), 
         orgId: v.optional(v.string())  // make optional column 
     }).index('by_org_id' , ['orgId']) , 
 

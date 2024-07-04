@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { useState } from "react";
  
 const formSchema = z.object({
   name: z.string().min(2).max(200),
@@ -34,30 +35,11 @@ export default function Home() {
   
 
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      file: undefined
-    },
-  })
-
-  const fileRef = form.register('file')
-
-
-  // submit form 
-
-  function onSubmit(values : z.infer<typeof formSchema>) {
-
-    console.log(values)
-  }
-
-
   const  organization = useOrganization() ;
 
   const user = useUser(); 
   // define organization / user id 
-  let orgId = null ; 
+  let orgId : string | undefined  = undefined ; 
 
   
 
@@ -70,26 +52,65 @@ export default function Home() {
 
   const createFile = useMutation(api.files.createFile)
 
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      file: undefined
+    },
+  })
+
+  const fileRef = form.register('file')
+
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+
+  
+  // closing dialog automatically 
+
+  const [isFileDialogOpen , setIsFileDialogOpen]= useState(false)
+
+  // submit form 
+
+  async function onSubmit(values : z.infer<typeof formSchema>) {
+
+    console.log(values)
+
+    const postUrl = await generateUploadUrl() 
+
+    const result = await fetch(postUrl, {
+      method : 'POST', 
+      headers : {"Content-Type" : values.file[0].type}, 
+
+      body : values.file[0]
+    })
+
+    const {storageId} = await result.json() ; 
+
+    if(!orgId) {
+      return ; 
+   }
+
+   await createFile({
+    name: values.name,
+    fileId: storageId,  
+    orgId 
+   })
+
+
+   form.reset() ; 
+
+   setIsFileDialogOpen(true)
+
+  }
+
+
+  
+  
   // searching files for organization id or by user id if there is not organization 
 
   const files = useQuery(api.files.getFiles, orgId  ? { orgId } : 'skip'  ) ; 
  
- 
-  // create file logic 
-
-  const handleCreateFile = () => {
-
-     if(!orgId) {
-        return ; 
-     }
-
-     createFile({
-      name: 'Hello', 
-      orgId 
-     })
-  }
-
-
   
 
 
@@ -99,7 +120,7 @@ export default function Home() {
       <div className="flex justify-between">
         <h1 className="text-4xl font-bold"> Your files </h1>
 
-        <Dialog>
+        <Dialog open={isFileDialogOpen} onOpenChange={setIsFileDialogOpen}>
           <DialogTrigger asChild>
             <Button className="px-auto" onClick={() => console.log('hi')}>
               <IoPushOutline /> Upload 
