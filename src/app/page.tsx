@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input"
 import { useState } from "react";
 import { title } from "process";
 import { useToast } from "@/components/ui/use-toast";
+import { Loader2 } from "lucide-react";
  
 const formSchema = z.object({
   name: z.string().min(2).max(200),
@@ -143,7 +144,10 @@ export default function Home() {
       <div className="flex justify-between">
         <h1 className="text-4xl font-bold"> Your files </h1>
 
-        <Dialog open={isFileDialogOpen} onOpenChange={setIsFileDialogOpen}>
+        <Dialog open={isFileDialogOpen} onOpenChange={(isOpen) => {
+          setIsFileDialogOpen(isOpen) 
+          form.reset() ; 
+        }}>
           <DialogTrigger asChild>
             <Button className="px-auto" onClick={() => console.log('hi')}>
               <IoPushOutline /> Upload 
@@ -187,7 +191,10 @@ export default function Home() {
                         )
                       }}
                     />
-                    <Button type="submit">Submit</Button>
+                    <Button type="submit" disabled={form.formState.isLoading} className="flex gap-2">
+                      {form.formState.isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      {form.formState.isLoading ? 'Uploading' : 'Submit' }
+                    </Button>
                   </form>
                 </Form>
               </DialogDescription>
