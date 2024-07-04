@@ -23,6 +23,8 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { useState } from "react";
+import { title } from "process";
+import { useToast } from "@/components/ui/use-toast";
  
 const formSchema = z.object({
   name: z.string().min(2).max(200),
@@ -51,6 +53,10 @@ export default function Home() {
   }
 
   const createFile = useMutation(api.files.createFile)
+
+  // toast 
+
+  const { toast } = useToast() ; 
 
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -91,17 +97,34 @@ export default function Home() {
       return ; 
    }
 
-   await createFile({
-    name: values.name,
-    fileId: storageId,  
-    orgId 
-   })
+   try {
+    await createFile({
+      name: values.name,
+      fileId: storageId,  
+      orgId 
+     })
+  
+  
+     form.reset() ; 
+  
+     setIsFileDialogOpen(false) ; 
+  
+     toast({
+      variant: 'success', 
+      title : 'Done !', 
+      description: 'Your file is uploaded'
+     })
+  
+   } catch (error) {
 
+    toast({
+      variant: 'destructive', 
+      title : 'Oops !', 
+      description: 'Something went wrong, your file could not be uploaded. Please try again later'
+     })
+   }
 
-   form.reset() ; 
-
-   setIsFileDialogOpen(true)
-
+   
   }
 
 
