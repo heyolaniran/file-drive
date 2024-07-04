@@ -25,7 +25,8 @@ import { Input } from "@/components/ui/input"
  
 const formSchema = z.object({
   name: z.string().min(2).max(200),
-  file : z.instanceof(FileList) 
+  file : z.custom<FileList>((value) => value instanceof FileList, 'Required')
+  .refine((files) => files.length > 0, 'Required')
 })
 
 export default function Home() {
