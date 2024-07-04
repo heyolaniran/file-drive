@@ -25,19 +25,23 @@ import { Input } from "@/components/ui/input"
  
 const formSchema = z.object({
   name: z.string().min(2).max(200),
-  file : z.custom<File | null >((value) => value instanceof File , 'Required')
+  file : z.instanceof(FileList) 
 })
 
 export default function Home() {
+
+  
 
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
-      file: null
+      file: undefined
     },
   })
+
+  const fileRef = form.register('file')
 
 
   // submit form 
@@ -126,23 +130,17 @@ export default function Home() {
                     <FormField
                       control={form.control}
                       name="file"
-                      render={({ field : { onChange} , ...field }) => (
-                        <FormItem>
-                          <FormLabel>File </FormLabel>
-                          <FormControl>
-                            <Input type="file" {...field}
-                             onChange={(event) => {
-                              if(!event.target.files) return ;
-                              onChange(event.target.files[0])
-                             }}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      render={({ field  }) => {
+                        return (
+                          <FormItem>
+                            <FormLabel>File</FormLabel>
+                            <FormControl>
+                              <Input type="file" placeholder="Add your file" {...fileRef} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )
+                      }}
                     />
                     <Button type="submit">Submit</Button>
                   </form>
