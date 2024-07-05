@@ -3,8 +3,6 @@ import { httpRouter } from "convex/server";
 import { internal } from "./_generated/api";
 import { httpAction } from "./_generated/server";
 
-
-
 const http = httpRouter();
 
 http.route({
@@ -26,18 +24,16 @@ http.route({
 
       switch (result.type) {
         case "user.created":
-          await ctx.runMutation(internal.users.createUser, {      
+          await ctx.runMutation(internal.users.createUser, {
             tokenIdentifier: `https://actual-dassie-23.clerk.accounts.dev|${result.data.id}`,
-           
           });
           break;
 
-        case "organizationMembership.created" : 
+        case "organizationMembership.created":
           await ctx.runMutation(internal.users.addOrgIdToUser, {
-            tokenIdentifier : `https://actual-dassie-23.clerk.accounts.dev|${result.data.public_user_data.user_id}` , 
-            orgId : result.data.organization.id
-          })
-        
+            tokenIdentifier: `https://actual-dassie-23.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
+          });
       }
 
       return new Response(null, {
