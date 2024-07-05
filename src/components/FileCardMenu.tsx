@@ -12,16 +12,25 @@ import { useState } from "react"
 import { Doc } from "../../convex/_generated/dataModel"
 import { useMutation } from "convex/react"
 import { api } from "../../convex/_generated/api"
+import { toast } from "./ui/use-toast"
   
 export function FileCardMenu ({file} : {file : Doc<"files">}) {
     const [isOpenDialog, setIsOpenDialog] = useState(false) ; 
 
     const deleteFile = useMutation(api.files.deleteFile) ; 
 
-    const deleteFn = () => {
-       deleteFile({
+    const deleteFn = async () => {
+        await deleteFile({
         fileId : file._id
        })
+
+       toast({
+        variant : 'success' , 
+        title : 'Done', 
+        description : 'The file is now gone from your system'
+       })
+
+
     }
 
     return (
