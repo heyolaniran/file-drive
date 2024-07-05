@@ -34,12 +34,12 @@ export default function Home() {
       
 
       {files !== undefined && (
-        <div className="grid grid-cols-4 gap-4 mt-4">
+        <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
           {files?.map((file) => <FileCard key={file._id} file={file} />)}
         </div>
       )}
 
-    {files && <Empty />}
+    {files?.length == 0 && <Empty />}
       
     </main>
   );

@@ -9,12 +9,13 @@ import {
 import { Doc } from "../../convex/_generated/dataModel";
 import { Button } from "./ui/button";
 import { IoDownload } from "react-icons/io5";
+import { FileCardMenu } from "./FileCardMenu";
 
 export function FileCard({ file }: { file: Doc<"files"> }) {
   return (
-    <Card>
+    <Card className="m-2">
       <CardHeader>
-        <CardTitle>{file.name}</CardTitle>
+        <CardTitle className="flex gap-1 justify-between">{file.name} <FileCardMenu/></CardTitle>
         {/*<CardDescription>Card Description</CardDescription>*/}
       </CardHeader>
       <CardContent>
