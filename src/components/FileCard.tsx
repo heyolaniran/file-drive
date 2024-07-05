@@ -14,8 +14,11 @@ import { FileCardMenu } from "./FileCardMenu";
 export function FileCard({ file }: { file: Doc<"files"> }) {
   return (
     <Card className="m-2">
-      <CardHeader>
-        <CardTitle className="flex gap-1 justify-between">{file.name} <FileCardMenu/></CardTitle>
+      <CardHeader className="relative">
+        <CardTitle className="flex gap-1 justify-between">{file.name}</CardTitle>
+        <div className="absolute top-2 right-2">
+        <FileCardMenu file={file}/>
+        </div>
         {/*<CardDescription>Card Description</CardDescription>*/}
       </CardHeader>
       <CardContent>
