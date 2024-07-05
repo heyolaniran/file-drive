@@ -6,19 +6,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Doc } from "../../convex/_generated/dataModel";
+import { Button } from "./ui/button";
+import { IoDownload } from "react-icons/io5";
 
-export function FileCard() {
+export function FileCard({ file }: { file: Doc<"files"> }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Card Title</CardTitle>
-        <CardDescription>Card Description</CardDescription>
+        <CardTitle>{file.name}</CardTitle>
+        {/*<CardDescription>Card Description</CardDescription>*/}
       </CardHeader>
       <CardContent>
-        <p>Card Content</p>
+        <p></p>
       </CardContent>
       <CardFooter>
-        <p>Card Footer</p>
+        <Button>
+          {" "}
+          <IoDownload />{" "}
+        </Button>
       </CardFooter>
     </Card>
   );
