@@ -96,7 +96,7 @@ export function UploadButton() {
       'image/png' : 'png', 
       'application/pdf' : 'pdf' , 
       'text/csv' : 'csv' ,
-    } as Record<string, Doc<'files'>['type']>
+    } as  Record<string, Doc<'files'>['type']>
 
     if (!orgId) {
       return;
