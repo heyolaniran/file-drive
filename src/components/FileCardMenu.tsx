@@ -4,9 +4,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, TrashIcon } from "lucide-react";
+import { MoreVertical, StarIcon, TrashIcon } from "lucide-react";
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
@@ -45,6 +46,16 @@ export function FileCardMenu({ file }: { file: Doc<"files"> }) {
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+
+        <DropdownMenuItem
+            onClick={() =>{}}
+            className="flex gap-1 items-center cursor-pointer "
+          >
+            <StarIcon className="w-4 h-4" /> Favorite
+          </DropdownMenuItem>
+          
+          <DropdownMenuSeparator />
+
           <DropdownMenuItem
             onClick={() => setIsOpenDialog(true)}
             className="flex gap-1 items-center cursor-pointer text-red-600 "
