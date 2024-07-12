@@ -29,8 +29,9 @@ export function FileCard({ file }: { file: Doc<"files"> }) {
   return (
     <Card className="m-2">
       <CardHeader className="relative">
-        <CardTitle className="flex gap-2">
-          <div className="flex justify-center">{typesIcon[file.type]}</div>
+        <CardTitle className="flex gap-2 text-sm">
+          <div className="flex justify-center">
+          {typesIcon[file.type]}</div>
           {file.name}
         </CardTitle>
         <div className="absolute top-2 right-2">
