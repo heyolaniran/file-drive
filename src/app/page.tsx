@@ -10,7 +10,7 @@ import Hero from "@/components/Hero";
 import SearchBar from "@/components/SearchBar";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { FileIcon } from "lucide-react";
+import { FileIcon, StarIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -37,13 +37,22 @@ export default function Home() {
       {user.isLoaded && !user.isSignedIn && <Hero />}
 
       <div className="flex">
-        <div className="w-40 flex justify-start">
+        <div className="w-40 flex flex-col gap-4">
           <Link href={"/"}>
             <Button variant={"link"} className="flex gap-2">
               {" "}
               <FileIcon /> All Files{" "}
             </Button>
           </Link>
+
+          <Link href={"/favorites"}>
+            <Button variant={"link"} className="flex gap-2">
+              {" "}
+              <StarIcon /> Favorites{" "}
+            </Button>
+          </Link>
+
+
         </div>
 
         <div className="w-full">
