@@ -14,7 +14,6 @@ export default function Home() {
   const user = useUser();
   // define organization / user id
 
-  
   let orgId: string | undefined = undefined;
 
   if (organization.isLoaded && user.isLoaded) {
@@ -28,9 +27,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto py-12">
-      {user.isLoaded && !user.isSignedIn && (
-        <Hero />
-      )}
+      {user.isLoaded && !user.isSignedIn && <Hero />}
 
       {user.isSignedIn && (
         <div className="flex justify-between">
@@ -39,9 +36,6 @@ export default function Home() {
           <UploadButton />
         </div>
       )}
-     
-
-      
 
       {files !== undefined && (
         <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
@@ -49,8 +43,7 @@ export default function Home() {
         </div>
       )}
 
-    {files?.length == 0 && <Empty />}
-      
+      {files?.length == 0 && <Empty />}
     </main>
   );
 }

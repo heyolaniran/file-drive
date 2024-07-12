@@ -31,7 +31,7 @@ async function hasAccessToOrg(
 export const createFile = mutation({
   args: {
     name: v.string(),
-    type : fileType,
+    type: fileType,
     fileId: v.id("_storage"),
     orgId: v.string(),
   },
@@ -93,36 +93,34 @@ export const getFiles = query({
   },
 });
 
-
-// deleting file 
+// deleting file
 
 export const deleteFile = mutation({
-  args: {fileId : v.id('files')} , 
+  args: { fileId: v.id("files") },
 
-  async handler(context , args) {
-      const identity = await context.auth.getUserIdentity() ; 
+  async handler(context, args) {
+    const identity = await context.auth.getUserIdentity();
 
-      if(!identity) {
-         throw new ConvexError('You must first log in') ; 
-      }
+    if (!identity) {
+      throw new ConvexError("You must first log in");
+    }
 
-      const file = await context.db.get(args.fileId); 
+    const file = await context.db.get(args.fileId);
 
-      if(!file) {
+    if (!file) {
+      throw new ConvexError("The file does not exist !");
+    }
 
-        throw new ConvexError('The file does not exist !') ; 
+    const hasAccess = await hasAccessToOrg(
+      context,
+      identity.tokenIdentifier,
+      file.orgId!,
+    );
 
-      }
+    if (!hasAccess) {
+      throw new ConvexError("You do not have access to delete this file");
+    }
 
-      const hasAccess = await hasAccessToOrg(context , identity.tokenIdentifier , file.orgId !) ; 
-
-      if(!hasAccess) {
-        throw new ConvexError("You do not have access to delete this file") ; 
-      }
-
-
-      await context.db.delete(args.fileId) ; 
-
-
-  }
-})
+    await context.db.delete(args.fileId);
+  },
+});

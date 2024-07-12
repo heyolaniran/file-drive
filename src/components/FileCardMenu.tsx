@@ -1,55 +1,58 @@
-'use client'
+"use client";
 
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-  } from "@/components/ui/dropdown-menu"
-import { MoreVertical, TrashIcon } from "lucide-react"
-import { AlertDialogCard } from "./AlertDialogCard"
-import { useState } from "react"
-import { Doc } from "../../convex/_generated/dataModel"
-import { useMutation } from "convex/react"
-import { api } from "../../convex/_generated/api"
-import { toast } from "./ui/use-toast"
-  
-export function FileCardMenu ({file} : {file : Doc<"files">}) {
-    const [isOpenDialog, setIsOpenDialog] = useState(false) ; 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreVertical, TrashIcon } from "lucide-react";
+import { AlertDialogCard } from "./AlertDialogCard";
+import { useState } from "react";
+import { Doc } from "../../convex/_generated/dataModel";
+import { useMutation } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import { toast } from "./ui/use-toast";
 
-    const deleteFile = useMutation(api.files.deleteFile) ; 
+export function FileCardMenu({ file }: { file: Doc<"files"> }) {
+  const [isOpenDialog, setIsOpenDialog] = useState(false);
 
-    const deleteFn = async () => {
-        await deleteFile({
-        fileId : file._id
-       })
+  const deleteFile = useMutation(api.files.deleteFile);
 
-       toast({
-        variant : 'success' , 
-        title : 'Done', 
-        description : 'The file is now gone from your system'
-       })
+  const deleteFn = async () => {
+    await deleteFile({
+      fileId: file._id,
+    });
 
+    toast({
+      variant: "success",
+      title: "Done",
+      description: "The file is now gone from your system",
+    });
+  };
 
-    }
+  return (
+    <>
+      <AlertDialogCard
+        trigger={isOpenDialog}
+        changeTriggerFn={setIsOpenDialog}
+        file={file}
+        executeFn={deleteFn}
+      />
 
-    return (
-        <>
-            <AlertDialogCard trigger={isOpenDialog} changeTriggerFn={setIsOpenDialog} file={file} executeFn={deleteFn} />
-
-            <DropdownMenu>
-                <DropdownMenuTrigger><MoreVertical/></DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => setIsOpenDialog(true)} className="flex gap-1 items-center cursor-pointer text-red-600 ">
-                        <TrashIcon className="w-4 h-4" /> Delete
-                    </DropdownMenuItem>
-                    
-                </DropdownMenuContent>
-            </DropdownMenu>
-        </>
-        
-
-        
-
-    )
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <MoreVertical />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => setIsOpenDialog(true)}
+            className="flex gap-1 items-center cursor-pointer text-red-600 "
+          >
+            <TrashIcon className="w-4 h-4" /> Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </>
+  );
 }

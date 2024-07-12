@@ -92,11 +92,11 @@ export function UploadButton() {
     const { storageId } = await result.json();
 
     // file types
-    const types  = {
-      'image/png' : 'png', 
-      'application/pdf' : 'pdf' , 
-      'text/csv' : 'csv' ,
-    } as  Record<string, Doc<'files'>['type']>
+    const types = {
+      "image/png": "png",
+      "application/pdf": "pdf",
+      "text/csv": "csv",
+    } as Record<string, Doc<"files">["type"]>;
 
     if (!orgId) {
       return;
@@ -105,7 +105,7 @@ export function UploadButton() {
     try {
       await createFile({
         name: values.name,
-        type : types[values.file[0].type] !, 
+        type: types[values.file[0].type]!,
         fileId: storageId,
         orgId,
       });
