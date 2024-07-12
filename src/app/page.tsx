@@ -6,12 +6,15 @@ import { api } from "../../convex/_generated/api";
 import { UploadButton } from "@/components/Upload-button";
 import { FileCard } from "@/components/FileCard";
 import { Empty } from "@/components/ui/empty";
+import Hero from "@/components/Hero";
 
 export default function Home() {
   const organization = useOrganization();
 
   const user = useUser();
   // define organization / user id
+
+  
   let orgId: string | undefined = undefined;
 
   if (organization.isLoaded && user.isLoaded) {
@@ -25,11 +28,18 @@ export default function Home() {
 
   return (
     <main className="container mx-auto py-12">
-      <div className="flex justify-between">
-        <h1 className="text-4xl font-bold"> Your files </h1>
+      {! user.isSignedIn && (
+        <Hero />
+      )}
 
-        <UploadButton />
-      </div>
+      {user.isSignedIn && (
+        <div className="flex justify-between">
+          <h1 className="text-4xl font-bold"> Your files </h1>
+
+          <UploadButton />
+        </div>
+      )}
+     
 
       
 

@@ -32,6 +32,7 @@ import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { Loader2 } from "lucide-react";
+import { Doc } from "../../convex/_generated/dataModel";
 
 const formSchema = z.object({
   name: z.string().min(2).max(200),
@@ -90,6 +91,13 @@ export function UploadButton() {
 
     const { storageId } = await result.json();
 
+    // file types
+    const types  = {
+      'image/png' : 'png', 
+      'application/pdf' : 'pdf' , 
+      'text/csv' : 'csv' ,
+    } as Record<string, Doc<'files'>['type']>
+
     if (!orgId) {
       return;
     }
@@ -97,6 +105,7 @@ export function UploadButton() {
     try {
       await createFile({
         name: values.name,
+        type : types[values.file[0].type] !, 
         fileId: storageId,
         orgId,
       });
