@@ -28,7 +28,7 @@ export default function Home() {
 
   return (
     <main className="container mx-auto py-12">
-      {! user.isSignedIn && (
+      {user.isLoaded && !user.isSignedIn && (
         <Hero />
       )}
 
