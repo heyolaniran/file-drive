@@ -2,6 +2,7 @@ import { ConvexError, v } from "convex/values";
 import { MutationCtx, QueryCtx, mutation, query } from "./_generated/server";
 import { getUser } from "./users";
 import { fileType } from "./schema";
+import { Id } from "./_generated/dataModel";
 
 // pre upload url
 
@@ -68,6 +69,7 @@ export const getFiles = query({
   args: {
     orgId: v.string(),
     query: v.optional(v.string()),
+    favorites :v.optional(v.boolean()) 
   },
 
   async handler(context, args) {
@@ -87,7 +89,7 @@ export const getFiles = query({
       return [];
     }
 
-    const files = await context.db
+    let  files = await context.db
       .query("files")
       .withIndex("by_org_id", (q) => q.eq("orgId", args.orgId))
       .collect();
@@ -95,12 +97,30 @@ export const getFiles = query({
     const query = args.query;
 
     if (query) {
-      return files.filter((file) =>
+      files =  files.filter((file) =>
         file.name.toLowerCase().includes(query.toLowerCase()),
       );
-    } else {
-      return files;
+    } 
+
+    if(args.favorites) {
+
+      const user =  await context.db.query('users').withIndex('by_tokenidentifier', 
+        q => q.eq('tokenIdentifier',identity.tokenIdentifier)).first() ; 
+
+        if(!user) {
+          return files
+        }
+
+      const favorites = await context.db.query("favorites").withIndex("by_userId_orgId_fileId",
+        q => q.eq('userId', user._id)
+        .eq('orgId', args.orgId)
+      )
+      .collect()
+
+      files = files.filter((file) => favorites.some((fav) => fav.fileId === file._id) )
     }
+
+    return files
   },
 });
 
@@ -110,28 +130,95 @@ export const deleteFile = mutation({
   args: { fileId: v.id("files") },
 
   async handler(context, args) {
-    const identity = await context.auth.getUserIdentity();
+    const access = await hasAccessToFile(context, args.fileId) ; 
 
-    if (!identity) {
-      throw new ConvexError("You must first log in");
+    if(!access) {
+
+      throw new ConvexError('You do not have access for this file'); 
+
     }
 
-    const file = await context.db.get(args.fileId);
-
-    if (!file) {
-      throw new ConvexError("The file does not exist !");
-    }
-
-    const hasAccess = await hasAccessToOrg(
-      context,
-      identity.tokenIdentifier,
-      file.orgId!,
-    );
-
-    if (!hasAccess) {
-      throw new ConvexError("You do not have access to delete this file");
-    }
 
     await context.db.delete(args.fileId);
   },
 });
+
+
+
+// Favorites
+
+export const toogleFavs = mutation(  {
+
+  args: { fileId: v.id("files") }, 
+
+  async handler(context , args) { 
+
+    const access = await hasAccessToFile(context, args.fileId) ; 
+
+    if(!access) {
+
+      throw new ConvexError('You do not have access for this file'); 
+
+    }
+
+
+    const {user , file} = access 
+   
+    const favorite = await context.db.query('favorites')
+    .withIndex('by_userId_orgId_fileId', 
+      q => q.eq('userId', user._id)
+      .eq('orgId', file.orgId!)
+      .eq('fileId', file._id))
+    .first();   
+
+
+    if(!favorite) {
+
+      await context.db.insert('favorites', {
+        fileId : file._id, 
+        orgId : file.orgId!, 
+        userId : user._id
+      })
+    }else  {
+
+      await context.db.delete(favorite._id); 
+    }
+
+
+  }
+})
+
+
+async function hasAccessToFile(context : QueryCtx | MutationCtx  , fileId : Id<"files">) {
+
+  const identity = await  context.auth.getUserIdentity() ; 
+
+  if (!identity) {
+    return null  
+  }
+
+  const file = await context.db.get(fileId) ; 
+
+  if (!file) {
+    return null 
+  }
+
+  const hasAccess = await hasAccessToOrg(context, identity.tokenIdentifier , file.orgId !) ; 
+
+  if (!hasAccess) {
+    return null
+  } 
+
+  const user = await context.db.query('users')
+  .withIndex("by_tokenidentifier" , 
+  q => q.eq('tokenIdentifier', identity.tokenIdentifier))
+  .first();
+
+  if(!user) {
+    return null; 
+   
+  }
+
+
+  return {user , file} ; 
+}
