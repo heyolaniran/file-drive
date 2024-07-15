@@ -5,7 +5,7 @@ export default function FavoritesPage() {
 
     return (
         <div>
-            <FilesBroswer title="Your Favs" />
+            <FilesBroswer title="Your Favs" favorites={true} />
         </div>
     )
 }

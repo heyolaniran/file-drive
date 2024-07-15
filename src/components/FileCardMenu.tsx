@@ -20,6 +20,7 @@ export function FileCardMenu({ file }: { file: Doc<"files"> }) {
 
   const deleteFile = useMutation(api.files.deleteFile);
 
+  const toogleFavorite = useMutation(api.files.toogleFavs); 
   const deleteFn = async () => {
     await deleteFile({
       fileId: file._id,
@@ -48,7 +49,9 @@ export function FileCardMenu({ file }: { file: Doc<"files"> }) {
         <DropdownMenuContent>
 
         <DropdownMenuItem
-            onClick={() =>{}}
+            onClick={() =>{
+              toogleFavorite({fileId : file._id})
+            }}
             className="flex gap-1 items-center cursor-pointer "
           >
             <StarIcon className="w-4 h-4" /> Favorite
