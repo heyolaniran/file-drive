@@ -17,11 +17,11 @@ export default defineSchema({
     orgId: v.optional(v.string()), // make optional column
   }).index("by_org_id", ["orgId"]),
 
-  favorites :  defineTable({
-    fileId : v.id('files'), 
-    orgId : v.string() , 
-    userId : v.id('users')
-  }).index("by_userId_orgId_fileId", ["userId", "orgId", "fileId"]), 
+  favorites: defineTable({
+    fileId: v.id("files"),
+    orgId: v.string(),
+    userId: v.id("users"),
+  }).index("by_userId_orgId_fileId", ["userId", "orgId", "fileId"]),
 
   //users table
   users: defineTable({

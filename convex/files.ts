@@ -105,63 +105,64 @@ export const getFiles = query({
   },
 });
 
-// toogle  Fav 
+// toogle  Fav
 
 export const toogleFavorite = mutation({
-  args : {fileId : v.id("files")},
+  args: { fileId: v.id("files") },
 
-  async handler (context , args) {
+  async handler(context, args) {
+    const access = await hasAccessToFile(context, args.fileId);
 
-    const access = await hasAccessToFile(context , args.fileId) ; 
-
-    if(!access) {
-       throw new ConvexError('You do not have permission to access to this file'); 
+    if (!access) {
+      throw new ConvexError(
+        "You do not have permission to access to this file",
+      );
     }
 
-    const {user, file} = access ; 
-    
-    const favorite = await context.db.query('favorites')
-      .withIndex('by_userId_orgId_fileId', q => q.eq('userId', user._id)
-      .eq('orgId', file.orgId !)
-      ).first(); 
+    const { user, file } = access;
 
-    if(!favorite) {
-      await context.db.insert('favorites', {
-        fileId: file._id, 
-        orgId : file.orgId! , 
-        userId : user._id
+    const favorite = await context.db
+      .query("favorites")
+      .withIndex("by_userId_orgId_fileId", (q) =>
+        q.eq("userId", user._id).eq("orgId", file.orgId!),
+      )
+      .first();
 
-      })
-    }else {
-      await context.db.delete(favorite._id)
+    if (!favorite) {
+      await context.db.insert("favorites", {
+        fileId: file._id,
+        orgId: file.orgId!,
+        userId: user._id,
+      });
+    } else {
+      await context.db.delete(favorite._id);
     }
-  }
-})
+  },
+});
 
-// All favorites 
-
+// All favorites
 
 export const getAllFavorites = query({
-  args : {orgId : v.string()} , 
+  args: { orgId: v.string() },
 
-  async  handler (contex, args) {
+  async handler(contex, args) {
+    const identity = await contex.auth.getUserIdentity();
 
-    const identity = await contex.auth.getUserIdentity() ; 
-
-    if(!identity) {
-      return []; 
+    if (!identity) {
+      return [];
     }
 
+    const access = await hasAccessToOrg(
+      contex,
+      identity.tokenIdentifier,
+      args.orgId,
+    );
 
-    const access = await hasAccessToOrg(contex, identity.tokenIdentifier, args.orgId) ; 
-
-    if(!access) {
-      return [] ; 
+    if (!access) {
+      return [];
     }
-
-   
-  }
-})
+  },
+});
 
 // deleting file
 
@@ -169,51 +170,56 @@ export const deleteFile = mutation({
   args: { fileId: v.id("files") },
 
   async handler(context, args) {
-    const access = await hasAccessToFile(context , args.fileId) ; 
+    const access = await hasAccessToFile(context, args.fileId);
 
-    if(!access) {
-       throw new ConvexError('You do not have permission to access to this file'); 
+    if (!access) {
+      throw new ConvexError(
+        "You do not have permission to access to this file",
+      );
     }
 
     await context.db.delete(args.fileId);
   },
 });
 
+// Have access to File Helper
 
-// Have access to File Helper 
+const hasAccessToFile = async (
+  context: QueryCtx | MutationCtx,
+  fileId: Id<"files">,
+) => {
+  const identity = await context.auth.getUserIdentity();
 
+  if (!identity) {
+    return null;
+  }
 
-const hasAccessToFile = async (context : QueryCtx | MutationCtx , fileId : Id<"files"> ) => {
+  const file = await context.db.get(fileId);
 
-  const identity = await context.auth.getUserIdentity() ; 
+  if (!file) {
+    return null;
+  }
 
-    if(!identity) {
-      return null 
-    }
+  const hasAccess = await hasAccessToOrg(
+    context,
+    identity.tokenIdentifier,
+    file.orgId!,
+  );
 
-    const file = await context.db.get(fileId); 
+  if (!hasAccess) {
+    return null;
+  }
 
-    if(!file) {
-      return null 
-    }
+  const user = await context.db
+    .query("users")
+    .withIndex("by_tokenidentifier", (q) =>
+      q.eq("tokenIdentifier", identity.tokenIdentifier),
+    )
+    .first();
 
-    const hasAccess = await hasAccessToOrg(
-      context , identity.tokenIdentifier, file.orgId !
-    ) ; 
+  if (!user) {
+    return null;
+  }
 
-    if(!hasAccess) {
-      return null 
-    }
-
-    const user = await context.db.query('users').withIndex('by_tokenidentifier' ,
-       q => q.eq('tokenIdentifier', identity.tokenIdentifier))
-       .first() ; 
-
-    if(!user) {
-     return null
-    }
-
-    return {user , file} ; 
-
-
-}
+  return { user, file };
+};

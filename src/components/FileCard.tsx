@@ -30,8 +30,7 @@ export function FileCard({ file }: { file: Doc<"files"> }) {
     <Card className="m-2">
       <CardHeader className="relative">
         <CardTitle className="flex gap-2 text-sm">
-          <div className="flex justify-center">
-          {typesIcon[file.type]}</div>
+          <div className="flex justify-center">{typesIcon[file.type]}</div>
           {file.name}
         </CardTitle>
         <div className="absolute top-2 right-2">
