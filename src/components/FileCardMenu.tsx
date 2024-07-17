@@ -19,6 +19,7 @@ export function FileCardMenu({ file }: { file: Doc<"files"> }) {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const deleteFile = useMutation(api.files.deleteFile);
+  const toogleFavorite = useMutation(api.files.toogleFavorite) ; 
 
   const deleteFn = async () => {
     await deleteFile({
@@ -48,7 +49,11 @@ export function FileCardMenu({ file }: { file: Doc<"files"> }) {
         <DropdownMenuContent>
 
         <DropdownMenuItem
-            onClick={() =>{}}
+            onClick={() =>{
+              toogleFavorite({
+                fileId : file._id,  
+              })
+            }}
             className="flex gap-1 items-center cursor-pointer "
           >
             <StarIcon className="w-4 h-4" /> Favorite
