@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useOrganization, useUser } from "@clerk/nextjs";
 import { useState } from "react";
 import { useQuery } from "convex/react";
@@ -7,51 +7,59 @@ import SearchBar from "@/components/SearchBar";
 import { UploadButton } from "@/components/Upload-button";
 import { FileCard } from "@/components/FileCard";
 import { Empty } from "@/components/ui/empty";
+import { skip } from "node:test";
 
-export default function FilesBroswer({title} : {title :string}) {
+export default function FilesBroswer({
+  title,
+  favoritesOnly,
+}: {
+  title: string;
+  favoritesOnly?: boolean;
+}) {
+  const organization = useOrganization();
 
-    const organization = useOrganization();
+  const user = useUser();
+  // define organization / user id
 
+  const [query, setQuery] = useState("");
 
-    const user = useUser();
-    // define organization / user id
-  
-    const [query, setQuery] = useState("");
-  
-    let orgId: string | undefined = undefined;
-  
-    if (organization.isLoaded && user.isLoaded) {
-      // if we get an organization id or user id
-      orgId = organization.organization?.id ?? user.user?.id;
-    }
-  
-    // searching files for organization id or by user id if there is not organization
-  
-    const files = useQuery(api.files.getFiles, orgId ? { orgId, query } : "skip");
-  
+  let orgId: string | undefined = undefined;
 
-    return (
+  if (organization.isLoaded && user.isLoaded) {
+    // if we get an organization id or user id
+    orgId = organization.organization?.id ?? user.user?.id;
+  }
 
-        <div className="w-full">
+  // get favorites lists 
 
+  const favorites = useQuery(api.files.getAllFavorites, {
+    orgId : orgId ? orgId :  "skip"
+  })
 
+  // searching files for organization id or by user id if there is not organization
 
-            {user.isSignedIn && (
-            <div className="flex justify-between mb-12">
-                <h1 className="text-4xl font-bold">{title} </h1>
-                <SearchBar query={query} setQuery={setQuery} />
-                <UploadButton />
-            </div>
-            )}
+  const files = useQuery(
+    api.files.getFiles,
+    orgId ? { orgId, query, favoritesOnly } : "skip",
+  );
 
-            {files !== undefined && (
-            <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
-                {files?.map((file) => <FileCard key={file._id} file={file} />)}
-            </div>
-            )}
+  return (
+    <div className="w-full">
+      {user.isSignedIn && (
+        <div className="flex justify-between mb-12">
+          <h1 className="text-4xl font-bold">{title} </h1>
+          <SearchBar query={query} setQuery={setQuery} />
+          <UploadButton />
+        </div>
+      )}
 
-            {files?.length == 0 && <Empty />}
-      </div>
+      {files !== undefined && (
+        <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
+          {files?.map((file) => <FileCard favorites={favorites!} key={file._id} file={file} />)}
+        </div>
+      )}
 
-    )
+      {files?.length == 0 && <Empty />}
+    </div>
+  );
 }
