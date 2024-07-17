@@ -7,7 +7,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, StarIcon, TrashIcon } from "lucide-react";
+import { MoreVertical, StarHalfIcon, StarIcon, TrashIcon } from "lucide-react";
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
@@ -15,7 +15,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
 
-export function FileCardMenu({ file }: { file: Doc<"files"> }) {
+export function FileCardMenu({ isFavorited , file }: { isFavorited : boolean,  file: Doc<"files"> }) {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const deleteFile = useMutation(api.files.deleteFile);
@@ -55,7 +55,17 @@ export function FileCardMenu({ file }: { file: Doc<"files"> }) {
             }}
             className="flex gap-1 items-center cursor-pointer "
           >
-            <StarIcon className="w-4 h-4" /> Favorite
+            {isFavorited ? 
+            <div className="flex gap-2 items-center">
+              <StarHalfIcon className="w-4 h-4 " /> Unfavorite
+            </div>
+            
+             :
+              <div className="flex gap-2 items-center">
+                <StarIcon className="w-4 h-4" /> Favorite
+              </div>
+            } {" "}
+              
           </DropdownMenuItem>
 
           <DropdownMenuSeparator />

@@ -16,17 +16,23 @@ export const generateUploadUrl = mutation(async (context) => {
   return context.storage.generateUploadUrl();
 });
 
-async function hasAccessToOrg(
-  context: QueryCtx | MutationCtx,
-  tokenIdentifier: string,
-  orgId: string,
-) {
-  const user = await getUser(context, tokenIdentifier);
+async function hasAccessToOrg(context: QueryCtx | MutationCtx, orgId: string) {
+  const identity = await context.auth.getUserIdentity();
+
+  if (!identity) {
+    return null;
+  }
+
+  const user = await getUser(context, identity.tokenIdentifier);
 
   const hasAccess =
     user.orgIds.includes(orgId) || user.tokenIdentifier.includes(orgId);
 
-  return hasAccess;
+  if (!hasAccess) {
+    return null;
+  }
+
+  return { user };
 }
 
 export const createFile = mutation({
@@ -44,11 +50,7 @@ export const createFile = mutation({
       throw new ConvexError("you must be logged In first");
     }
 
-    const hasAccess = await hasAccessToOrg(
-      context,
-      identity.tokenIdentifier,
-      args.orgId,
-    );
+    const hasAccess = await hasAccessToOrg(context, args.orgId);
 
     if (!hasAccess) {
       throw new ConvexError("You are not authorized in this Organization");
@@ -69,7 +71,7 @@ export const getFiles = query({
   args: {
     orgId: v.string(),
     query: v.optional(v.string()),
-    favorites: v.optional(v.boolean()),
+    favoritesOnly: v.optional(v.boolean()),
   },
 
   async handler(context, args) {
@@ -81,7 +83,7 @@ export const getFiles = query({
 
     const hasAccess = await hasAccessToOrg(
       context,
-      identity.tokenIdentifier,
+
       args.orgId,
     );
 
@@ -96,7 +98,7 @@ export const getFiles = query({
 
     const query = args.query;
 
-    if (args.favorites) {
+    if (args.favoritesOnly) {
       const user = await context.db
         .query("users")
         .withIndex("by_tokenidentifier", (q) =>
@@ -175,15 +177,22 @@ export const getAllFavorites = query({
       return [];
     }
 
-    const access = await hasAccessToOrg(
-      contex,
-      identity.tokenIdentifier,
-      args.orgId,
-    );
+    const access = await hasAccessToOrg(contex, args.orgId);
 
     if (!access) {
       return [];
     }
+
+    
+   
+    const favorites = await contex.db
+      .query("favorites")
+      .withIndex("by_userId_orgId_fileId", (q) =>
+        q.eq("userId", access.user._id).eq("orgId", args.orgId),
+      )
+      .collect();
+
+    return favorites ; 
   },
 });
 
@@ -211,11 +220,7 @@ const hasAccessToFile = async (
   context: QueryCtx | MutationCtx,
   fileId: Id<"files">,
 ) => {
-  const identity = await context.auth.getUserIdentity();
-
-  if (!identity) {
-    return null;
-  }
+  
 
   const file = await context.db.get(fileId);
 
@@ -223,26 +228,12 @@ const hasAccessToFile = async (
     return null;
   }
 
-  const hasAccess = await hasAccessToOrg(
-    context,
-    identity.tokenIdentifier,
-    file.orgId!,
-  );
+  const hasAccess = await hasAccessToOrg(context, file.orgId!);
 
   if (!hasAccess) {
     return null;
   }
 
-  const user = await context.db
-    .query("users")
-    .withIndex("by_tokenidentifier", (q) =>
-      q.eq("tokenIdentifier", identity.tokenIdentifier),
-    )
-    .first();
-
-  if (!user) {
-    return null;
-  }
-
-  return { user, file };
-};
+  return { user : hasAccess.user, file };
+ 
+  } ;
