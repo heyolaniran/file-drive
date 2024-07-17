@@ -69,6 +69,7 @@ export const getFiles = query({
   args: {
     orgId: v.string(),
     query: v.optional(v.string()),
+    favorites: v.optional(v.boolean()),
   },
 
   async handler(context, args) {
@@ -88,20 +89,42 @@ export const getFiles = query({
       return [];
     }
 
-    const files = await context.db
+    let files = await context.db
       .query("files")
       .withIndex("by_org_id", (q) => q.eq("orgId", args.orgId))
       .collect();
 
     const query = args.query;
 
+    if (args.favorites) {
+      const user = await context.db
+        .query("users")
+        .withIndex("by_tokenidentifier", (q) =>
+          q.eq("tokenIdentifier", identity.tokenIdentifier),
+        )
+        .first();
+
+      if (!user) {
+        return files;
+      }
+
+      const favorites = await context.db
+        .query("favorites")
+        .withIndex("by_userId_orgId_fileId", (q) => q.eq("userId", user._id))
+        .collect();
+
+      files = files.filter((file) =>
+        favorites.some((fav) => fav.fileId === file._id),
+      );
+    }
+
     if (query) {
-      return files.filter((file) =>
+      files = files.filter((file) =>
         file.name.toLowerCase().includes(query.toLowerCase()),
       );
-    } else {
-      return files;
     }
+
+    return files;
   },
 });
 

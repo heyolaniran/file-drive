@@ -8,7 +8,13 @@ import { UploadButton } from "@/components/Upload-button";
 import { FileCard } from "@/components/FileCard";
 import { Empty } from "@/components/ui/empty";
 
-export default function FilesBroswer({ title }: { title: string }) {
+export default function FilesBroswer({
+  title,
+  favorites,
+}: {
+  title: string;
+  favorites?: boolean;
+}) {
   const organization = useOrganization();
 
   const user = useUser();
@@ -25,7 +31,10 @@ export default function FilesBroswer({ title }: { title: string }) {
 
   // searching files for organization id or by user id if there is not organization
 
-  const files = useQuery(api.files.getFiles, orgId ? { orgId, query } : "skip");
+  const files = useQuery(
+    api.files.getFiles,
+    orgId ? { orgId, query, favorites } : "skip",
+  );
 
   return (
     <div className="w-full">
