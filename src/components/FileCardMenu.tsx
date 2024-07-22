@@ -14,6 +14,7 @@ import { Doc } from "../../convex/_generated/dataModel";
 import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
+import { Protect } from "@clerk/nextjs";
 
 export function FileCardMenu({ isFavorited , file }: { isFavorited : boolean,  file: Doc<"files"> }) {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
@@ -68,13 +69,18 @@ export function FileCardMenu({ isFavorited , file }: { isFavorited : boolean,  f
               
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />  
-          <DropdownMenuItem
-            onClick={() => setIsOpenDialog(true)}
-            className="flex gap-1 items-center cursor-pointer text-red-600 "
-          >
-            <TrashIcon className="w-4 h-4" /> Delete
-          </DropdownMenuItem>
+         
+          <Protect role="org:admin" fallback={
+            <p></p>
+          }>
+             <DropdownMenuSeparator />  
+            <DropdownMenuItem
+              onClick={() => setIsOpenDialog(true)}
+              className="flex gap-1 items-center cursor-pointer text-red-600 "
+            >
+              <TrashIcon className="w-4 h-4" /> Delete
+            </DropdownMenuItem>
+          </Protect>
         </DropdownMenuContent>
       </DropdownMenu>
     </>
