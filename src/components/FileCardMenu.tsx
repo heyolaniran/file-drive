@@ -68,8 +68,7 @@ export function FileCardMenu({ isFavorited , file }: { isFavorited : boolean,  f
               
           </DropdownMenuItem>
 
-          <DropdownMenuSeparator />
-
+          <DropdownMenuSeparator />  
           <DropdownMenuItem
             onClick={() => setIsOpenDialog(true)}
             className="flex gap-1 items-center cursor-pointer text-red-600 "
