@@ -7,7 +7,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreVertical, StarHalfIcon, StarIcon, TrashIcon } from "lucide-react";
+import {
+  MoreVertical,
+  StarHalfIcon,
+  StarIcon,
+  TrashIcon,
+  UndoIcon,
+} from "lucide-react";
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
@@ -15,6 +21,7 @@ import { useMutation } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
 import { Protect } from "@clerk/nextjs";
+import { restoreFile } from "../../convex/files";
 
 export function FileCardMenu({
   isFavorited,
@@ -26,6 +33,7 @@ export function FileCardMenu({
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
   const deleteFile = useMutation(api.files.deleteFile);
+  const restoreFile = useMutation(api.files.restoreFile);
   const toogleFavorite = useMutation(api.files.toogleFavorite);
 
   const deleteFn = async () => {
@@ -36,7 +44,17 @@ export function FileCardMenu({
     toast({
       variant: "success",
       title: "Done",
-      description: "The file is now gone from your system",
+      description: "The file is now moved to the trash",
+    });
+  };
+
+  const restoreFn = async () => {
+    await restoreFile({ fileId: file._id });
+
+    toast({
+      variant: "success",
+      title: "Done",
+      description: "The file is now restored to your repository",
     });
   };
 
@@ -54,32 +72,48 @@ export function FileCardMenu({
           <MoreVertical />
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem
-            onClick={() => {
-              toogleFavorite({
-                fileId: file._id,
-              });
-            }}
-            className="flex gap-1 items-center cursor-pointer "
-          >
-            {isFavorited ? (
-              <div className="flex gap-2 items-center">
-                <StarHalfIcon className="w-4 h-4 " /> Unfavorite
-              </div>
-            ) : (
-              <div className="flex gap-2 items-center">
-                <StarIcon className="w-4 h-4" /> Favorite
-              </div>
-            )}{" "}
-          </DropdownMenuItem>
+          {!file.shouldDelete && (
+            <DropdownMenuItem
+              onClick={() => {
+                toogleFavorite({
+                  fileId: file._id,
+                });
+              }}
+              className="flex gap-1 items-center cursor-pointer "
+            >
+              {isFavorited ? (
+                <div className="flex gap-2 items-center">
+                  <StarHalfIcon className="w-4 h-4 " /> Unfavorite
+                </div>
+              ) : (
+                <div className="flex gap-2 items-center">
+                  <StarIcon className="w-4 h-4" /> Favorite
+                </div>
+              )}{" "}
+            </DropdownMenuItem>
+          )}
 
           <Protect role="org:admin" fallback={<p></p>}>
             <DropdownMenuSeparator />
             <DropdownMenuItem
-              onClick={() => setIsOpenDialog(true)}
-              className="flex gap-1 items-center cursor-pointer text-red-600 "
+              onClick={() => {
+                if (!file.shouldDelete) {
+                  setIsOpenDialog(true);
+                } else {
+                  restoreFn();
+                }
+              }}
+              className=""
             >
-              <TrashIcon className="w-4 h-4" /> Delete
+              {file.shouldDelete ? (
+                <div className="flex gap-1 items-center cursor-pointer text-green-500">
+                  <UndoIcon className="w-4 h-4" /> Restore
+                </div>
+              ) : (
+                <div className="flex gap-1 items-center cursor-pointer text-red-500">
+                  <TrashIcon className="w-4 h-4" /> Delete
+                </div>
+              )}
             </DropdownMenuItem>
           </Protect>
         </DropdownMenuContent>

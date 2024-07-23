@@ -232,6 +232,31 @@ export const deleteFile = mutation({
   },
 });
 
+// restore files
+
+export const restoreFile = mutation({
+  args: { fileId: v.id("files") },
+  async handler(context, args) {
+    const access = await hasAccessToFile(context, args.fileId);
+
+    if (!access) {
+      throw new ConvexError("You do not have access to this file");
+    }
+
+    let isAdmin =
+      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
+        ?.role === "admin";
+
+    if (!isAdmin) {
+      throw new ConvexError("You have no rights to make this action");
+    }
+
+    await context.db.patch(args.fileId, {
+      shouldDelete: false,
+    });
+  },
+});
+
 // Have access to File Helper
 
 const hasAccessToFile = async (
