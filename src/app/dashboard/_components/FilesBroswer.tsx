@@ -12,9 +12,11 @@ import { skip } from "node:test";
 export default function FilesBroswer({
   title,
   favoritesOnly,
+  deletedOnly
 }: {
   title: string;
   favoritesOnly?: boolean;
+  deletedOnly? : boolean
 }) {
   const organization = useOrganization();
 
@@ -40,7 +42,7 @@ export default function FilesBroswer({
 
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favoritesOnly } : "skip",
+    orgId ? { orgId, query, favoritesOnly, deletedOnly } : "skip",
   );
 
   return (

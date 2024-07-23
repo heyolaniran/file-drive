@@ -17,6 +17,7 @@ export default defineSchema({
     type: fileType,
     fileId: v.id("_storage"),
     orgId: v.optional(v.string()), // make optional column
+    shouldDelete : v.optional(v.boolean())
   }).index("by_org_id", ["orgId"]),
 
   favorites: defineTable({
