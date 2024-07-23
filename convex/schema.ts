@@ -8,7 +8,7 @@ export const fileType = v.union(
   v.literal("pdf"),
 );
 
-export const roles = v.union(v.literal('admin'), v.literal('member'))
+export const roles = v.union(v.literal("admin"), v.literal("member"));
 
 export default defineSchema({
   // files table
@@ -17,7 +17,7 @@ export default defineSchema({
     type: fileType,
     fileId: v.id("_storage"),
     orgId: v.optional(v.string()), // make optional column
-    shouldDelete : v.optional(v.boolean())
+    shouldDelete: v.optional(v.boolean()),
   }).index("by_org_id", ["orgId"]),
 
   favorites: defineTable({
@@ -29,10 +29,11 @@ export default defineSchema({
   //users table
   users: defineTable({
     tokenIdentifier: v.string(),
-    orgIds: v.array(v.object({
-      orgId : v.string(), 
-      role : roles
-    })),
-   
+    orgIds: v.array(
+      v.object({
+        orgId: v.string(),
+        role: roles,
+      }),
+    ),
   }).index("by_tokenidentifier", ["tokenIdentifier"]),
 });

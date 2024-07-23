@@ -34,17 +34,17 @@ http.route({
           await ctx.runMutation(internal.users.addOrgIdToUser, {
             tokenIdentifier: `https://actual-dassie-23.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
             orgId: result.data.organization.id,
-            role: result.data.role === 'admin' ?  'admin' :  'member'
+            role: result.data.role === "admin" ? "admin" : "member",
           });
-        break ; 
+          break;
 
-        case "organizationMembership.updated" : 
+        case "organizationMembership.updated":
           await ctx.runMutation(internal.users.updateRoleInOrgForUser, {
-            tokenIdentifier :  `https://actual-dassie-23.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
-            orgId : result.data.organization.id, 
+            tokenIdentifier: `https://actual-dassie-23.clerk.accounts.dev|${result.data.public_user_data.user_id}`,
+            orgId: result.data.organization.id,
 
-            role: result.data.role === 'org:admin' ? 'admin' : 'member'
-          })
+            role: result.data.role === "org:admin" ? "admin" : "member",
+          });
       }
 
       return new Response(null, {

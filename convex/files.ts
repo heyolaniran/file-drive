@@ -26,7 +26,8 @@ async function hasAccessToOrg(context: QueryCtx | MutationCtx, orgId: string) {
   const user = await getUser(context, identity.tokenIdentifier);
 
   const hasAccess =
-    user.orgIds.some((item) => item.orgId === orgId) || user.tokenIdentifier.includes(orgId);
+    user.orgIds.some((item) => item.orgId === orgId) ||
+    user.tokenIdentifier.includes(orgId);
 
   if (!hasAccess) {
     return null;
@@ -72,7 +73,7 @@ export const getFiles = query({
     orgId: v.string(),
     query: v.optional(v.string()),
     favoritesOnly: v.optional(v.boolean()),
-    deletedOnly: v.optional(v.boolean())
+    deletedOnly: v.optional(v.boolean()),
   },
 
   async handler(context, args) {
@@ -121,14 +122,10 @@ export const getFiles = query({
       );
     }
 
-    if(args.deletedOnly) {
-
-      files = files.filter((file) => file.shouldDelete) ; 
-
-    }else  {
-
-      files = files.filter((file) => !file.shouldDelete) ; 
-
+    if (args.deletedOnly) {
+      files = files.filter((file) => file.shouldDelete);
+    } else {
+      files = files.filter((file) => !file.shouldDelete);
     }
 
     if (query) {
@@ -194,8 +191,6 @@ export const getAllFavorites = query({
       return [];
     }
 
-    
-   
     const favorites = await contex.db
       .query("favorites")
       .withIndex("by_userId_orgId_fileId", (q) =>
@@ -203,7 +198,7 @@ export const getAllFavorites = query({
       )
       .collect();
 
-    return favorites ; 
+    return favorites;
   },
 });
 
@@ -221,25 +216,19 @@ export const deleteFile = mutation({
       );
     }
 
-   
+    let isAdmin =
+      access.user.orgIds.find((org) => org.orgId === access.file.orgId)
+        ?.role === "admin";
 
-    let isAdmin = access.user.orgIds.find((org) => org.orgId === access.file.orgId)?.role === 'admin' ; 
-    
-
-
- 
-
-    if(!isAdmin) {
-      
-      throw new ConvexError("You have no access to delete this file")
+    if (!isAdmin) {
+      throw new ConvexError("You have no access to delete this file");
     }
 
     await context.db.patch(args.fileId, {
-      shouldDelete : true 
-    })
-    
+      shouldDelete: true,
+    });
+
     //await context.db.delete(args.fileId);
-    
   },
 });
 
@@ -249,8 +238,6 @@ const hasAccessToFile = async (
   context: QueryCtx | MutationCtx,
   fileId: Id<"files">,
 ) => {
-  
-
   const file = await context.db.get(fileId);
 
   if (!file) {
@@ -263,6 +250,5 @@ const hasAccessToFile = async (
     return null;
   }
 
-  return { user : hasAccess.user, file };
- 
-  } ;
+  return { user: hasAccess.user, file };
+};

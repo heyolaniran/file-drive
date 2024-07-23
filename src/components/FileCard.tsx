@@ -12,9 +12,13 @@ import { FileCardMenu } from "./FileCardMenu";
 import { ReactNode } from "react";
 import { FileTextIcon, GanttChartIcon, ImageIcon } from "lucide-react";
 
-export function FileCard({ file, favorites }: { file: Doc<"files">, favorites : Doc<"favorites">[] }) {
-
-
+export function FileCard({
+  file,
+  favorites,
+}: {
+  file: Doc<"files">;
+  favorites: Doc<"favorites">[];
+}) {
   // file types
   const typesIcon = {
     image: <ImageIcon />,
@@ -28,13 +32,9 @@ export function FileCard({ file, favorites }: { file: Doc<"files">, favorites : 
     return `${process.env.CONVEX_STORAGE_URL}/api/storage/${fileId}`;
   };
 
+  // favorites ones
 
-  // favorites ones 
-
-
-  const isFavorited =  favorites.some((fav) => fav.fileId === file._id)
-
-  
+  const isFavorited = favorites.some((fav) => fav.fileId === file._id);
 
   return (
     <Card className="m-2">

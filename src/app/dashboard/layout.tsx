@@ -37,11 +37,14 @@ export default function DashBoardLayout({ children }: { children: ReactNode }) {
           </Link>
 
           <Link href={"/dashboard/trash"}>
-              <Button variant={"link"} className={clsx("flex gap-2", {
-                "text-red-500" : pathname.includes('/dashboard/trash'),
-              })}>
-                <TrashIcon /> Trash 
-              </Button>
+            <Button
+              variant={"link"}
+              className={clsx("flex gap-2", {
+                "text-red-500": pathname.includes("/dashboard/trash"),
+              })}
+            >
+              <TrashIcon /> Trash
+            </Button>
           </Link>
         </div>
 

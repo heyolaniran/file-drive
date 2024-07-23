@@ -35,7 +35,7 @@ export const addOrgIdToUser = internalMutation({
   args: {
     tokenIdentifier: v.string(),
     orgId: v.string(),
-    role : roles
+    role: roles,
   },
 
   async handler(context, args) {
@@ -46,34 +46,33 @@ export const addOrgIdToUser = internalMutation({
     // append org identifiers  to existing user organization list
 
     await context.db.patch(user._id, {
-      orgIds: [...user.orgIds, {orgId : args.orgId, role : args.role}],
+      orgIds: [...user.orgIds, { orgId: args.orgId, role: args.role }],
     });
   },
 });
 
-
 export const updateRoleInOrgForUser = internalMutation({
-  args : {
-    tokenIdentifier : v.string(), 
-    orgId : v.string() , 
-    role : roles
-  } , 
+  args: {
+    tokenIdentifier: v.string(),
+    orgId: v.string(),
+    role: roles,
+  },
 
-  async handler(context , args) {
+  async handler(context, args) {
+    const user = await getUser(context, args.tokenIdentifier);
 
-    const user = await getUser(context, args.tokenIdentifier); 
+    const org = user.orgIds.find((org) => org.orgId === args.orgId);
 
-    const org = user.orgIds.find((org) => org.orgId === args.orgId)
-
-    if(!org) {
-      throw new ConvexError('Expected Organization but not found while updating user information');
+    if (!org) {
+      throw new ConvexError(
+        "Expected Organization but not found while updating user information",
+      );
     }
 
-    org.role = args.role
+    org.role = args.role;
 
-
-    await context.db.patch(user._id , {
-      orgIds : user.orgIds
-    })
-  }
-})
+    await context.db.patch(user._id, {
+      orgIds: user.orgIds,
+    });
+  },
+});
