@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { FileIcon, StarIcon } from "lucide-react";
+import { FileIcon, StarIcon, TrashIcon } from "lucide-react";
 import clsx from "clsx";
 import { usePathname } from "next/navigation";
 
@@ -34,6 +34,14 @@ export default function DashBoardLayout({ children }: { children: ReactNode }) {
               {" "}
               <StarIcon /> Favorites{" "}
             </Button>
+          </Link>
+
+          <Link href={"/dashboard/trash"}>
+              <Button variant={"link"} className={clsx("flex gap-2", {
+                "text-red-500" : pathname.includes('/dashboard/trash'),
+              })}>
+                <TrashIcon /> Trash 
+              </Button>
           </Link>
         </div>
 

@@ -72,6 +72,7 @@ export const getFiles = query({
     orgId: v.string(),
     query: v.optional(v.string()),
     favoritesOnly: v.optional(v.boolean()),
+    deletedOnly: v.optional(v.boolean())
   },
 
   async handler(context, args) {
@@ -118,6 +119,16 @@ export const getFiles = query({
       files = files.filter((file) =>
         favorites.some((fav) => fav.fileId === file._id),
       );
+    }
+
+    if(args.deletedOnly) {
+
+      files = files.filter((file) => file.shouldDelete) ; 
+
+    }else  {
+
+      files = files.filter((file) => !file.shouldDelete) ; 
+
     }
 
     if (query) {
@@ -210,14 +221,24 @@ export const deleteFile = mutation({
       );
     }
 
-    const isAdmin = access.user.orgIds.find((org) => org.orgId === args.fileId)?.role === 'admin' 
+   
+
+    let isAdmin = access.user.orgIds.find((org) => org.orgId === access.file.orgId)?.role === 'admin' ; 
+    
+
+
+ 
 
     if(!isAdmin) {
       
       throw new ConvexError("You have no access to delete this file")
     }
 
-    await context.db.delete(args.fileId);
+    await context.db.patch(args.fileId, {
+      shouldDelete : true 
+    })
+    
+    //await context.db.delete(args.fileId);
     
   },
 });

@@ -29,8 +29,7 @@ export function AlertDialogCard({
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+          This  action will mark the file as delected in your trash repository. Do you want to continue ?
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
