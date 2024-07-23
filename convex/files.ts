@@ -1,5 +1,5 @@
 import { ConvexError, v } from "convex/values";
-import { MutationCtx, QueryCtx, mutation, query } from "./_generated/server";
+import { MutationCtx, QueryCtx, internalMutation, mutation, query } from "./_generated/server";
 import { getUser } from "./users";
 import { fileType } from "./schema";
 import { Id } from "./_generated/dataModel";
@@ -256,6 +256,25 @@ export const restoreFile = mutation({
     });
   },
 });
+
+
+// delete Trash files 
+
+export const clearTrash = internalMutation({
+  args : {}, 
+  async handler (context) {
+
+      const files =  await context.db.query('files').withIndex('by_ShouldDelete', q=> q.eq("shouldDelete", true)).collect();
+
+
+      await Promise.all(files.map(async (file) => {
+        await context.storage.delete(file.fileId) ; 
+        return await context.db.delete(file._id)
+      }))
+
+    
+  }
+})
 
 // Have access to File Helper
 
