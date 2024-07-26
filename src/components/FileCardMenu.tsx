@@ -17,11 +17,11 @@ import {
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
 import { Doc } from "../../convex/_generated/dataModel";
-import { useMutation } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
 import { Protect } from "@clerk/nextjs";
-import { restoreFile } from "../../convex/files";
+
 
 export function FileCardMenu({
   isFavorited,
@@ -35,6 +35,8 @@ export function FileCardMenu({
   const deleteFile = useMutation(api.files.deleteFile);
   const restoreFile = useMutation(api.files.restoreFile);
   const toogleFavorite = useMutation(api.files.toogleFavorite);
+
+ 
 
   const deleteFn = async () => {
     await deleteFile({

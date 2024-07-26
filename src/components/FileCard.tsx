@@ -11,6 +11,9 @@ import { Button } from "./ui/button";
 import { FileCardMenu } from "./FileCardMenu";
 import { ReactNode } from "react";
 import { FileTextIcon, GanttChartIcon, ImageIcon } from "lucide-react";
+import { useQuery } from "convex/react";
+import { api } from "../../convex/_generated/api";
+import {Avatar , AvatarFallback, AvatarImage } from "@/components/ui/avatar" ; 
 
 export function FileCard({
   file,
@@ -35,6 +38,12 @@ export function FileCard({
   // favorites ones
 
   const isFavorited = favorites.some((fav) => fav.fileId === file._id);
+
+  // user profile 
+
+  const userProfile = useQuery(api.users.getUserProfile, {
+    userId : file.userId
+  }) ; 
 
   return (
     <Card className="m-2">
@@ -62,14 +71,29 @@ export function FileCard({
 
         {file.type === "pdf" && <FileTextIcon className="w-20 h-20" />}
       </CardContent>
-      <CardFooter className="flex justify-center">
-        <Button
-          onClick={() => {
-            window.open(getFileURL(file.fileId), "_blank");
-          }}
-        >
-          Download
-        </Button>
+      <CardFooter className="flex justify-between">
+       
+          <div className="text-sm">
+            <Avatar>
+              <AvatarImage src={userProfile?.image}/>
+              <AvatarFallback>FD</AvatarFallback>
+            </Avatar>
+          </div>
+          <div>
+          <Button
+            onClick={() => {
+              window.open(getFileURL(file.fileId), "_blank");
+            }}
+          >
+            Download
+          </Button>
+          </div>
+          
+
+        
+        
+        
+       
       </CardFooter>
     </Card>
   );
