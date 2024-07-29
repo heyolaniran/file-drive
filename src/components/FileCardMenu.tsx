@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  DownloadCloud,
   MoreVertical,
   StarHalfIcon,
   StarIcon,
@@ -16,7 +17,7 @@ import {
 } from "lucide-react";
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
-import { Doc } from "../../convex/_generated/dataModel";
+import { Doc, Id } from "../../convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
@@ -60,6 +61,11 @@ export function FileCardMenu({
     });
   };
 
+
+  const getFileURL = (fileId: Id<"_storage">): string => {
+    return `${process.env.CONVEX_STORAGE_URL}/api/storage/${fileId}`;
+  };
+
   return (
     <>
       <AlertDialogCard
@@ -95,6 +101,14 @@ export function FileCardMenu({
             </DropdownMenuItem>
           )}
 
+
+          <DropdownMenuItem  className="flex gap-1 items-center cursor-pointer" onClick={() => {
+            window.open(getFileURL(file.fileId))
+          }}>
+            <DownloadCloud className="w-4 h-4" /> Download
+          </DropdownMenuItem>
+
+          
           <Protect role="org:admin" fallback={<p></p>}>
             <DropdownMenuSeparator />
             <DropdownMenuItem

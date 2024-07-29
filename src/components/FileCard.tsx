@@ -14,7 +14,7 @@ import { FileTextIcon, GanttChartIcon, ImageIcon } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import {Avatar , AvatarFallback, AvatarImage } from "@/components/ui/avatar" ; 
-
+import {formatDistance, subDays} from 'date-fns'
 export function FileCard({
   file,
   favorites,
@@ -71,22 +71,17 @@ export function FileCard({
 
         {file.type === "pdf" && <FileTextIcon className="w-20 h-20" />}
       </CardContent>
-      <CardFooter className="flex justify-between">
+      <CardFooter className="flex gap-4 justify-between text-xs">
        
-          <div className="text-sm">
-            <Avatar>
+          <div className="flex gap-2 text-xs text-gray-700 items-center">
+            <Avatar className="w-6 h-6">
               <AvatarImage src={userProfile?.image}/>
               <AvatarFallback>FD</AvatarFallback>
             </Avatar>
+            {userProfile?.name}
           </div>
-          <div>
-          <Button
-            onClick={() => {
-              window.open(getFileURL(file.fileId), "_blank");
-            }}
-          >
-            Download
-          </Button>
+          <div className="text-xs">
+           {formatDistance(subDays(new Date(file._creationTime), 3), new Date(), {addSuffix : true} ) }
           </div>
           
 
