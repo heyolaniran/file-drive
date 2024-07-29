@@ -28,7 +28,7 @@ export function FileCardMenu({
   file,
 }: {
   isFavorited: boolean;
-  file: Doc<"files">;
+  file: Doc<"files"> & {url : string};
 }) {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
@@ -59,9 +59,6 @@ export function FileCardMenu({
     });
   };
 
-  const getFileURL = (fileId: Id<"_storage">): string => {
-    return `${process.env.CONVEX_STORAGE_URL}/api/storage/${fileId}`;
-  };
 
   return (
     <>
@@ -101,7 +98,7 @@ export function FileCardMenu({
           <DropdownMenuItem
             className="flex gap-1 items-center cursor-pointer"
             onClick={() => {
-              window.open(getFileURL(file.fileId));
+              window.open(file.url);
             }}
           >
             <DownloadCloud className="w-4 h-4" /> Download
