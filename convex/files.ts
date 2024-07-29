@@ -81,6 +81,7 @@ export const getFiles = query({
     query: v.optional(v.string()),
     favoritesOnly: v.optional(v.boolean()),
     deletedOnly: v.optional(v.boolean()),
+    type: v.optional(v.string())
   },
 
   async handler(context, args) {
@@ -139,6 +140,10 @@ export const getFiles = query({
       files = files.filter((file) =>
         file.name.toLowerCase().includes(query.toLowerCase()),
       );
+    }
+
+    if(args.type !== 'all') {
+      files = files.filter((file) => file.type === args.type) ; 
     }
 
     return files;
@@ -223,11 +228,11 @@ export const deleteFile = mutation({
       );
     }
 
-    let isAdmin =
+    let canDelete = access.file.userId == access.user._id ||
       access.user.orgIds.find((org) => org.orgId === access.file.orgId)
         ?.role === "admin";
 
-    if (!isAdmin) {
+    if (!canDelete) {
       throw new ConvexError("You have no access to delete this file");
     }
 
@@ -250,11 +255,11 @@ export const restoreFile = mutation({
       throw new ConvexError("You do not have access to this file");
     }
 
-    let isAdmin =
+    let canRestore = access.file.userId == access.user._id ||
       access.user.orgIds.find((org) => org.orgId === access.file.orgId)
         ?.role === "admin";
 
-    if (!isAdmin) {
+    if (!canRestore) {
       throw new ConvexError("You have no rights to make this action");
     }
 
