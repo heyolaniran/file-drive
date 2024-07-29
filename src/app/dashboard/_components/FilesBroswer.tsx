@@ -9,6 +9,8 @@ import { FileCard } from "@/components/FileCard";
 import { Empty } from "@/components/ui/empty";
 import { DataTable } from "./file-card";
 import { columns } from "./colums";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { GridIcon, TableIcon } from "lucide-react";
 
 export default function FilesBroswer({
   title,
@@ -61,15 +63,32 @@ export default function FilesBroswer({
         </div>
       )}
 
+
+  
+
+
       {files !== undefined && (
         <>
-          <DataTable columns={columns} data={modifiedFiles}></DataTable>
 
-          <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
-            {modifiedFiles?.map((file) => (
-              <FileCard key={file._id}  file={file} />
-            ))}
-          </div>
+          <Tabs defaultValue="grid">
+            <TabsList >
+              <TabsTrigger value="grid" className="flex gap-2 items-center"> <GridIcon/> Grid</TabsTrigger>
+              <TabsTrigger value="table" className="flex gap-2 items-center"> <TableIcon/> Table</TabsTrigger>
+            </TabsList>
+            <TabsContent value="grid"> 
+              <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
+                {modifiedFiles?.map((file) => (
+                  <FileCard key={file._id}  file={file} />
+                ))}
+              </div>
+            </TabsContent>
+            <TabsContent value="table">
+              <DataTable columns={columns} data={modifiedFiles}></DataTable>
+            </TabsContent>
+          </Tabs>
+          
+
+          
         </>
       )}
 
