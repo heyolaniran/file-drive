@@ -13,12 +13,12 @@ export default function Header() {
   return (
     <div className="">
       <div className=" items-center container mx-auto justify-between py-2 flex">
-        <div className="items-center">
+        <div className="items-center gap-4">
            <Link href={'/'} className="text-lg font-bold">
               File Driver 
             </Link>
 
-            <Link href={'/dashboard/files'}>
+            <Link href={'/dashboard/files'} className="px-4">
               Your files
             </Link>
         </div>
