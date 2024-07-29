@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
-import { SignIn, SignInButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignIn, SignInButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -17,11 +18,22 @@ export default function Hero() {
           </span>
         </div>
 
-        <SignInButton mode="modal">
+        <SignedOut>
+          <SignInButton mode="modal">
+            <Button className="mt-4">
+              Get Started <ArrowRight className="w-4 h-4 ml-2" />
+            </Button>
+          </SignInButton>
+        </SignedOut>
+        
+
+        <SignedIn>
+          <Link href={'/dashboard/files'}>
           <Button className="mt-4">
             Get Started <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
-        </SignInButton>
+          </Link>
+        </SignedIn>
       </div>
     </section>
   );
