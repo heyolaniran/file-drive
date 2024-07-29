@@ -13,14 +13,12 @@ import { ReactNode } from "react";
 import { FileTextIcon, GanttChartIcon, ImageIcon } from "lucide-react";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
-import {Avatar , AvatarFallback, AvatarImage } from "@/components/ui/avatar" ; 
-import {formatDistance, subDays} from 'date-fns'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { formatDistance, subDays } from "date-fns";
 export function FileCard({
   file,
-  favorites,
 }: {
-  file: Doc<"files">;
-  favorites: Doc<"favorites">[];
+  file: Doc<"files"> & { isFavorited: boolean};
 }) {
   // file types
   const typesIcon = {
@@ -37,13 +35,12 @@ export function FileCard({
 
   // favorites ones
 
-  const isFavorited = favorites.some((fav) => fav.fileId === file._id);
 
-  // user profile 
+  // user profile
 
   const userProfile = useQuery(api.users.getUserProfile, {
-    userId : file.userId
-  }) ; 
+    userId: file.userId,
+  });
 
   return (
     <Card className="m-2">
@@ -53,7 +50,7 @@ export function FileCard({
           {file.name}
         </CardTitle>
         <div className="absolute top-2 right-2">
-          <FileCardMenu isFavorited={isFavorited} file={file} />
+          <FileCardMenu isFavorited={file.isFavorited} file={file} />
         </div>
         {/*<CardDescription>Card Description</CardDescription>*/}
       </CardHeader>
@@ -72,23 +69,20 @@ export function FileCard({
         {file.type === "pdf" && <FileTextIcon className="w-20 h-20" />}
       </CardContent>
       <CardFooter className="flex gap-4 justify-between text-xs">
-       
-          <div className="flex gap-2 text-xs text-gray-700 items-center">
-            <Avatar className="w-6 h-6">
-              <AvatarImage src={userProfile?.image}/>
-              <AvatarFallback>FD</AvatarFallback>
-            </Avatar>
-            {userProfile?.name}
-          </div>
-          <div className="text-xs">
-           {formatDistance(subDays(new Date(file._creationTime), 3), new Date(), {addSuffix : true} ) }
-          </div>
-          
-
-        
-        
-        
-       
+        <div className="flex gap-2 text-xs text-gray-700 items-center">
+          <Avatar className="w-6 h-6">
+            <AvatarImage src={userProfile?.image} />
+            <AvatarFallback>FD</AvatarFallback>
+          </Avatar>
+          {userProfile?.name}
+        </div>
+        <div className="text-xs">
+          {formatDistance(
+            subDays(new Date(file._creationTime), 3),
+            new Date(),
+            { addSuffix: true },
+          )}
+        </div>
       </CardFooter>
     </Card>
   );

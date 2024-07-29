@@ -18,11 +18,10 @@ import {
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
 import { Doc, Id } from "../../convex/_generated/dataModel";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
 import { Protect } from "@clerk/nextjs";
-
 
 export function FileCardMenu({
   isFavorited,
@@ -36,8 +35,6 @@ export function FileCardMenu({
   const deleteFile = useMutation(api.files.deleteFile);
   const restoreFile = useMutation(api.files.restoreFile);
   const toogleFavorite = useMutation(api.files.toogleFavorite);
-
- 
 
   const deleteFn = async () => {
     await deleteFile({
@@ -60,7 +57,6 @@ export function FileCardMenu({
       description: "The file is now restored to your repository",
     });
   };
-
 
   const getFileURL = (fileId: Id<"_storage">): string => {
     return `${process.env.CONVEX_STORAGE_URL}/api/storage/${fileId}`;
@@ -101,14 +97,15 @@ export function FileCardMenu({
             </DropdownMenuItem>
           )}
 
-
-          <DropdownMenuItem  className="flex gap-1 items-center cursor-pointer" onClick={() => {
-            window.open(getFileURL(file.fileId))
-          }}>
+          <DropdownMenuItem
+            className="flex gap-1 items-center cursor-pointer"
+            onClick={() => {
+              window.open(getFileURL(file.fileId));
+            }}
+          >
             <DownloadCloud className="w-4 h-4" /> Download
           </DropdownMenuItem>
 
-          
           <Protect role="org:admin" fallback={<p></p>}>
             <DropdownMenuSeparator />
             <DropdownMenuItem

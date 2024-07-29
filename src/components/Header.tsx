@@ -14,16 +14,14 @@ export default function Header() {
     <div className="">
       <div className=" items-center container mx-auto justify-between py-2 flex">
         <div className="items-center gap-4">
-           <Link href={'/'} className="text-lg font-bold">
-              File Driver 
-            </Link>
+          <Link href={"/"} className="text-lg font-bold">
+            File Driver
+          </Link>
 
-            <Link href={'/dashboard/files'} className="px-4">
-              Your files
-            </Link>
+          <Link href={"/dashboard/files"} className="px-4">
+            Your files
+          </Link>
         </div>
-       
-        
 
         <div className=" items-center flex gap-2">
           <SignedIn>

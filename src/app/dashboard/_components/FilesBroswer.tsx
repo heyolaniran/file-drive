@@ -7,7 +7,8 @@ import SearchBar from "@/components/SearchBar";
 import { UploadButton } from "@/components/Upload-button";
 import { FileCard } from "@/components/FileCard";
 import { Empty } from "@/components/ui/empty";
-import { skip } from "node:test";
+import { DataTable } from "./file-card";
+import { columns } from "./colums";
 
 export default function FilesBroswer({
   title,
@@ -45,6 +46,11 @@ export default function FilesBroswer({
     orgId ? { orgId, query, favoritesOnly, deletedOnly } : "skip",
   );
 
+  const modifiedFiles = files?.map((file) => ({
+    ...file, 
+    isFavorited : (favorites ?? []).some((favorite) => favorite.fileId == file._id)
+  })) ?? [] ; 
+
   return (
     <div className="w-full">
       {user.isSignedIn && (
@@ -56,11 +62,15 @@ export default function FilesBroswer({
       )}
 
       {files !== undefined && (
-        <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
-          {files?.map((file) => (
-            <FileCard favorites={favorites!} key={file._id} file={file} />
-          ))}
-        </div>
+        <>
+          <DataTable columns={columns} data={modifiedFiles}></DataTable>
+
+          <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
+            {modifiedFiles?.map((file) => (
+              <FileCard key={file._id}  file={file} />
+            ))}
+          </div>
+        </>
       )}
 
       {files?.length == 0 && <Empty />}
