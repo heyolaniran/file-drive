@@ -78,7 +78,7 @@ export function UploadButton() {
   // submit form
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    console.log(values.file[0].type);
 
     const postUrl = await generateUploadUrl();
 
@@ -93,7 +93,7 @@ export function UploadButton() {
 
     // file types
     const types = {
-      "image/png": "png",
+      "image/png": "image",
       "application/pdf": "pdf",
       "text/csv": "csv",
     } as Record<string, Doc<"files">["type"]>;

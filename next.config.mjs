@@ -5,7 +5,7 @@ const nextConfig = {
         remotePatterns : [
             {
                 protocol : 'https', 
-                hostname : process.env.NEXT_PUBLIC_CONVEX_URL, 
+                hostname : 'zany-wildebeest-667.convex.cloud', 
                 
             }
         ]

@@ -146,7 +146,15 @@ export const getFiles = query({
       files = files.filter((file) => file.type === args.type) ; 
     }
 
-    return files;
+    const filesWithUrl = await Promise.all(
+      files.map(async (file) => ({
+        ...file, 
+        url : await context.storage.getUrl(file.fileId)
+      }))
+      
+    )
+
+    return filesWithUrl;
   },
 });
 
