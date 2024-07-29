@@ -81,6 +81,7 @@ export const getFiles = query({
     query: v.optional(v.string()),
     favoritesOnly: v.optional(v.boolean()),
     deletedOnly: v.optional(v.boolean()),
+    type: v.optional(v.string())
   },
 
   async handler(context, args) {
@@ -139,6 +140,10 @@ export const getFiles = query({
       files = files.filter((file) =>
         file.name.toLowerCase().includes(query.toLowerCase()),
       );
+    }
+
+    if(args.type !== 'all') {
+      files = files.filter((file) => file.type === args.type) ; 
     }
 
     return files;

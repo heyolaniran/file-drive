@@ -10,7 +10,8 @@ import { Empty } from "@/components/ui/empty";
 import { DataTable } from "./file-card";
 import { columns } from "./colums";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { GridIcon, TableIcon } from "lucide-react";
+import { GridIcon, RowsIcon } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function FilesBroswer({
   title,
@@ -21,6 +22,8 @@ export default function FilesBroswer({
   favoritesOnly?: boolean;
   deletedOnly?: boolean;
 }) {
+
+  const [type, setType] = useState('all') ; 
   const organization = useOrganization();
 
   const user = useUser();
@@ -45,7 +48,7 @@ export default function FilesBroswer({
 
   const files = useQuery(
     api.files.getFiles,
-    orgId ? { orgId, query, favoritesOnly, deletedOnly } : "skip",
+    orgId ? { orgId, query, favoritesOnly, deletedOnly, type } : "skip",
   );
 
   const modifiedFiles = files?.map((file) => ({
@@ -71,10 +74,29 @@ export default function FilesBroswer({
         <>
 
           <Tabs defaultValue="grid">
-            <TabsList >
-              <TabsTrigger value="grid" className="flex gap-2 items-center"> <GridIcon/> Grid</TabsTrigger>
-              <TabsTrigger value="table" className="flex gap-2 items-center"> <TableIcon/> Table</TabsTrigger>
-            </TabsList>
+            <div className="justify-between flex items-center">
+              <div>
+              <TabsList >
+                <TabsTrigger value="grid" className="flex gap-2 items-center"> <GridIcon/> Grid</TabsTrigger>
+                <TabsTrigger value="table" className="flex gap-2 items-center"> <RowsIcon/> Table</TabsTrigger>
+              </TabsList>
+              </div>
+
+              <div>
+                <Select value={type} onValueChange={setType}>
+                  <SelectTrigger className="w-[180px]">
+                    <SelectValue placeholder="type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="image">Image</SelectItem>
+                    <SelectItem value="csv">CSV</SelectItem>
+                    <SelectItem value="pdf">PDF</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+           
             <TabsContent value="grid"> 
               <div className="grid lg:grid-cols-4 md:grid-cols-1 lg:gap-4 mt-4">
                 {modifiedFiles?.map((file) => (
