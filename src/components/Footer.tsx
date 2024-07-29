@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Footer() {
   return (
     <footer className="bg-gray-50 mt-32">
@@ -8,7 +10,7 @@ export default function Footer() {
           </div>
 
           <p className="mt-4 text-center text-sm text-gray-500 lg:mt-0 lg:text-right">
-            Copyright &copy; 2022. All rights reserved.
+            Copyright &copy; {(new Date()).getFullYear()} All rights reserved. By <Link href={'https://x.com/heyolaniran'} className=" underline underline-offset-2"> Olaniran </Link>
           </p>
         </div>
       </div>
