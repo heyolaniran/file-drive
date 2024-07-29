@@ -81,7 +81,7 @@ export const getFiles = query({
     query: v.optional(v.string()),
     favoritesOnly: v.optional(v.boolean()),
     deletedOnly: v.optional(v.boolean()),
-    type: v.optional(v.string())
+    type: v.optional(v.string()),
   },
 
   async handler(context, args) {
@@ -142,17 +142,16 @@ export const getFiles = query({
       );
     }
 
-    if(args.type !== 'all') {
-      files = files.filter((file) => file.type === args.type) ; 
+    if (args.type !== "all") {
+      files = files.filter((file) => file.type === args.type);
     }
 
     const filesWithUrl = await Promise.all(
       files.map(async (file) => ({
-        ...file, 
-        url : await context.storage.getUrl(file.fileId)
-      }))
-      
-    )
+        ...file,
+        url: await context.storage.getUrl(file.fileId),
+      })),
+    );
 
     return filesWithUrl;
   },
@@ -236,7 +235,8 @@ export const deleteFile = mutation({
       );
     }
 
-    let canDelete = access.file.userId == access.user._id ||
+    let canDelete =
+      access.file.userId == access.user._id ||
       access.user.orgIds.find((org) => org.orgId === access.file.orgId)
         ?.role === "admin";
 
@@ -263,7 +263,8 @@ export const restoreFile = mutation({
       throw new ConvexError("You do not have access to this file");
     }
 
-    let canRestore = access.file.userId == access.user._id ||
+    let canRestore =
+      access.file.userId == access.user._id ||
       access.user.orgIds.find((org) => org.orgId === access.file.orgId)
         ?.role === "admin";
 

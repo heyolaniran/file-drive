@@ -18,7 +18,7 @@ import {
 import { AlertDialogCard } from "./AlertDialogCard";
 import { useState } from "react";
 import { Doc, Id } from "../../convex/_generated/dataModel";
-import { useMutation, useQuery, } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { toast } from "./ui/use-toast";
 import { Protect } from "@clerk/nextjs";
@@ -28,7 +28,7 @@ export function FileCardMenu({
   file,
 }: {
   isFavorited: boolean;
-  file: Doc<"files"> & {url : string};
+  file: Doc<"files"> & { url: string };
 }) {
   const [isOpenDialog, setIsOpenDialog] = useState(false);
 
@@ -36,7 +36,7 @@ export function FileCardMenu({
   const restoreFile = useMutation(api.files.restoreFile);
   const toogleFavorite = useMutation(api.files.toogleFavorite);
 
-  const me  = useQuery(api.users.getMe) ; 
+  const me = useQuery(api.users.getMe);
   const deleteFn = async () => {
     await deleteFile({
       fileId: file._id,
@@ -58,7 +58,6 @@ export function FileCardMenu({
       description: "The file is now restored to your repository",
     });
   };
-
 
   return (
     <>
@@ -104,11 +103,16 @@ export function FileCardMenu({
             <DownloadCloud className="w-4 h-4" /> Download
           </DropdownMenuItem>
 
-          <Protect condition={(check) => {
-            return check({
-              role : "org:admin"
-            }) || file.userId == me?._id 
-          }} fallback={<p></p>}>
+          <Protect
+            condition={(check) => {
+              return (
+                check({
+                  role: "org:admin",
+                }) || file.userId == me?._id
+              );
+            }}
+            fallback={<p></p>}
+          >
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={() => {

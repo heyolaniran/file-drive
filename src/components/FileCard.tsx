@@ -18,7 +18,7 @@ import { formatDistance, subDays } from "date-fns";
 export function FileCard({
   file,
 }: {
-  file: Doc<"files">& { isFavorited: boolean ,  url : string};
+  file: Doc<"files"> & { isFavorited: boolean; url: string };
 }) {
   // file types
   const typesIcon = {
@@ -27,9 +27,7 @@ export function FileCard({
     csv: <GanttChartIcon />,
   } as Record<Doc<"files">["type"], ReactNode>;
 
-
   // favorites ones
-
 
   // user profile
 

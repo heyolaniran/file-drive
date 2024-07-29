@@ -119,27 +119,22 @@ export const getUserProfile = query({
   },
 });
 
-
 export const getMe = query({
-  args : {}, 
+  args: {},
 
-  async handler(context , args) {
+  async handler(context, args) {
+    const identity = await context.auth.getUserIdentity();
 
-    const identity = await context.auth.getUserIdentity() ;
-
-    if(!identity) {
-
-      throw new ConvexError('You must be logged in do do this action'); 
+    if (!identity) {
+      throw new ConvexError("You must be logged in do do this action");
     }
 
-    const user = await getUser(context, identity.tokenIdentifier) ; 
+    const user = await getUser(context, identity.tokenIdentifier);
 
-    if(!user) {
-
-      throw new ConvexError('No user found')
+    if (!user) {
+      throw new ConvexError("No user found");
     }
 
-    return user ; 
-
-  }
-})
+    return user;
+  },
+});
