@@ -51,8 +51,6 @@ export default function FilesBroswer({
     orgId ? { orgId, query, favoritesOnly, deletedOnly, type } : "skip",
   );
 
-  console.log(files) ; 
-
   const modifiedFiles = files?.map((file) => ({
     ...file, 
     isFavorited : (favorites ?? []).some((favorite) => favorite.fileId == file._id)
