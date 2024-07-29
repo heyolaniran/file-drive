@@ -255,11 +255,11 @@ export const restoreFile = mutation({
       throw new ConvexError("You do not have access to this file");
     }
 
-    let isAdmin =
+    let canRestore = access.file.userId == access.user._id ||
       access.user.orgIds.find((org) => org.orgId === access.file.orgId)
         ?.role === "admin";
 
-    if (!isAdmin) {
+    if (!canRestore) {
       throw new ConvexError("You have no rights to make this action");
     }
 
