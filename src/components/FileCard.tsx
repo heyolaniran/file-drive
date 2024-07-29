@@ -48,7 +48,7 @@ export function FileCard({
   return (
     <Card className="m-2">
       <CardHeader className="relative">
-        <CardTitle className="flex gap-2 text-sm">
+        <CardTitle className="flex gap-2 text-base font-normal">
           <div className="flex justify-center">{typesIcon[file.type]}</div>
           {file.name}
         </CardTitle>
